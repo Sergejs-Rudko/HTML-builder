@@ -2,14 +2,13 @@
 //2. Prompt greeting
 //3. On enter get line from prompt and pass it to the file
 //4. On ctrl+C or 'exit' say bye, close the process
-const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
+const FileHandle = require('fs').promises;
 
 //1.
 const fileName = 'file.txt';
 const pathToFile = path.join(__dirname, fileName);
-
 
 //2
 const rl = readline.createInterface({
@@ -22,22 +21,15 @@ const sayBye = () => {
 };
 
 (() => {
-  console.log('Hello!');
-  rl.on('line', (userText) => {
+  console.log('hello');
+  rl.on('line',  (userText) => {
     if (userText.trim() !== 'exit') {
-      const textWithEnter = `${userText} \n`;
-      fs.writeFile(pathToFile, textWithEnter,{flag : 'a'}, (err) => {
-        if (err) {
-          console.log('smthing went wrong');
-        }
-      });
+      FileHandle.appendFile(pathToFile, `${userText} \n`);
     } else {
       sayBye();
     }
   });
+  rl.on('SIGINT', () => {
+    sayBye();
+  });
 })();
-
-process.on('SIGINT',()=>{
-  sayBye();
-});
-
